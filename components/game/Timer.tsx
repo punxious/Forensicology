@@ -42,7 +42,7 @@ export function Timer({ deadline, startedAt, serverNow, finishedAt }: { deadline
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs tracking-widest text-muted uppercase">{overtime ? "Overtime" : "Time left"}</span>
+      <span className={`text-xs tracking-widest uppercase ${overtime ? "text-accent" : "hidden text-muted sm:inline"}`}>{overtime ? "Overtime" : "Time left"}</span>
       <span
         role="timer"
         aria-label={overtime ? `Overtime ${formatClock(-remaining)}` : `${formatClock(remaining)} left`}

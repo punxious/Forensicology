@@ -14,10 +14,10 @@ export type BriefingInfo = {
   briefingHtml: string;
 };
 
-export function Briefing({ info, onStart, starting, error }: { info: BriefingInfo; onStart: () => void; starting: boolean; error: string | null }) {
+export function Briefing({ info, onStart, starting, error, immersive = false }: { info: BriefingInfo; onStart: () => void; starting: boolean; error: string | null; immersive?: boolean }) {
   return (
-    <main id="main" className="mx-auto max-w-3xl px-4 py-10 sm:py-16">
-      <Link href="/cases" className="text-sm text-muted underline">
+    <main id="main" className={`mx-auto max-w-3xl px-4 py-10 sm:py-16 ${immersive ? "lg:mr-[6vw] lg:ml-auto lg:max-w-2xl" : ""}`}>
+      <Link href="/cases" className={`text-sm underline ${immersive ? "rounded bg-black/50 px-2 py-1 text-[#e8e4da]" : "text-muted"}`}>
         ← All cases
       </Link>
       <div className="relative mt-6 rounded-md bg-folder p-1 pt-8 shadow-2xl">

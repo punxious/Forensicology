@@ -3,6 +3,8 @@ import Link from "next/link";
 import { listCases } from "@/lib/server/cases";
 import { DIFFICULTY_LABELS } from "@/lib/client/format";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { ScenePoster } from "@/components/site/ScenePoster";
+import { GalleryShelf3D } from "@/components/three/Lazy";
 
 export const metadata: Metadata = {
   title: "Cases",
@@ -13,11 +15,27 @@ export default function CasesPage() {
   const cases = listCases();
   return (
     <>
-      <SiteHeader />
-      <main id="main" className="mx-auto max-w-6xl px-4 py-10">
-        <h1 className="font-[family-name:var(--font-stamp)] text-3xl sm:text-4xl">Open cases</h1>
-        <p className="mt-2 text-muted">Each case is a self-contained investigation. Your progress saves as you go.</p>
-        <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="absolute inset-x-0 top-0 z-20">
+        <SiteHeader overlay />
+      </div>
+      <main id="main">
+        <section aria-labelledby="archive-title" className="relative isolate h-[78svh] min-h-[560px] overflow-hidden bg-[#0a0b0e] text-[#ece6d8]">
+          <div className="absolute inset-0 -z-10">
+            <ScenePoster name="archive" priority />
+            <GalleryShelf3D cases={cases.map((c) => ({ slug: c.slug, title: c.title, sub: `${c.durationMinutes} MIN · ${DIFFICULTY_LABELS[c.difficulty]!.toUpperCase()}` }))} />
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#0a0b0e] to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/70 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 mx-auto max-w-6xl px-4 pb-8 [&_*]:pointer-events-auto">
+            <h1 id="archive-title" className="font-[family-name:var(--font-stamp)] text-3xl sm:text-4xl">
+              The archive
+            </h1>
+            <p className="mt-2 max-w-lg text-[#cfc8b8]">Pull a box off the shelf. Each case is a self-contained investigation, and your progress saves as you go.</p>
+          </div>
+        </section>
+        <div className="mx-auto max-w-6xl px-4 pb-16">
+        <h2 className="mt-4 text-xs font-bold tracking-widest text-muted uppercase">All cases</h2>
+        <ul className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {cases.map((c) => (
             <li key={c.slug}>
               <Link href={`/play/${c.slug}`} className="group block h-full rounded-md bg-folder p-1 pt-6 shadow-lg transition hover:-translate-y-0.5 hover:shadow-2xl">
@@ -51,6 +69,7 @@ export default function CasesPage() {
             </li>
           ))}
         </ul>
+        </div>
       </main>
     </>
   );

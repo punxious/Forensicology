@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import type { PublicPuzzle, RunView } from "@/lib/engine/game";
 import { ApiError, gameApi, type Unlocks } from "@/lib/client/api";
 import { play } from "@/lib/client/sfx";
+import { useMediaQuery, useReducedMotion, useThreeD } from "@/lib/client/three-pref";
 import { EvidenceViewer } from "@/components/case/EvidenceViewer";
 import { Button, EvidenceTag, Html } from "@/components/ui/primitives";
 import type { SubmitResult } from "@/components/puzzles/types";
@@ -12,7 +14,10 @@ import { Briefing, type BriefingInfo } from "./Briefing";
 import { PuzzlePanel } from "./PuzzlePanel";
 import { ResultScreen } from "./ResultScreen";
 import { Timer } from "./Timer";
-import { SoundToggle, ThemeToggle } from "./Toggles";
+import { SoundToggle, ThemeToggle, ThreeDToggle } from "./Toggles";
+
+// The 3D lab loads in its own chunk, only on the client and only when 3D is on.
+const LabScene = dynamic(() => import("@/components/three/LabScene"), { ssr: false });
 
 type Selection = { kind: "evidence" | "puzzle"; id: string } | null;
 type Toast = { id: number; text: string; evidenceId?: string; puzzleId?: string };
@@ -29,8 +34,15 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
   const [confirmRestart, setConfirmRestart] = useState(false);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [drawer, setDrawer] = useState(false);
+  const [sceneFailed, setSceneFailed] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
   const toastId = useRef(0);
+  const threeD = useThreeD();
+  const reducedMotion = useReducedMotion();
+  const mobile = useMediaQuery("(max-width: 767px)");
+  const wide = useMediaQuery("(min-width: 1024px)");
+  const immersive = threeD === "on" && !sceneFailed;
 
   const evidence = useMemo(() => new Map((view?.evidence ?? []).map((e) => [e.id, e])), [view]);
   const seenKey = view ? `fx-seen-${view.run.runId}` : null;
@@ -67,6 +79,7 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
   const select = (s: Selection) => {
     setSelection(s);
     setReference(null);
+    if (immersive) setDrawer(false);
     if (s?.kind === "evidence") markSeen(s.id);
     if (s?.kind === "puzzle") setOpened((o) => (o.includes(s.id) ? o : [...o, s.id]));
     play("open");
@@ -181,36 +194,147 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
     setView(r.view);
   };
 
-  if (!view) return <Briefing info={briefing} onStart={() => start()} starting={starting} error={error} />;
-  if (view.result) return <ResultScreen view={view} onRestart={() => start(true)} />;
+  const backdrop = (mode: "intro" | "done", stations: RunView["stations"] = []) =>
+    immersive && (
+      <div className="fixed inset-0 -z-0" aria-hidden="false">
+        <LabScene
+          mode={mode}
+          caseTitle={briefing.title}
+          stations={stations.map((s) => ({ ...s, solved: true }))}
+          evidenceCount={0}
+          newEvidence={0}
+          focus={null}
+          panelSide={false}
+          showHotspots={false}
+          reducedMotion={reducedMotion}
+          paused={false}
+          mobile={mobile}
+          onSelect={() => undefined}
+          onOpenCaseFile={() => undefined}
+          onFail={() => setSceneFailed(true)}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.65)_100%)]" />
+      </div>
+    );
+
+  if (!view)
+    return (
+      <div className="relative isolate min-h-dvh">
+        {backdrop("intro")}
+        <div className="relative">
+          <Briefing info={briefing} onStart={() => start()} starting={starting} error={error} immersive={immersive} />
+        </div>
+      </div>
+    );
+  if (view.result)
+    return (
+      <div className="relative isolate min-h-dvh">
+        {backdrop("done", view.stations)}
+        <div className="relative">
+          <ResultScreen view={view} onRestart={() => start(true)} />
+        </div>
+      </div>
+    );
 
   const selectedPuzzle = selection?.kind === "puzzle" ? view.puzzles.find((p) => p.id === selection.id) : undefined;
   const selectedEvidence = selection?.kind === "evidence" ? evidence.get(selection.id) : undefined;
   const referenceEvidence = reference ? evidence.get(reference) : undefined;
   const unsolved = view.puzzles.filter((p) => !p.solved);
   const solved = view.puzzles.filter((p) => p.solved);
+  const newEvidence = view.evidence.filter((e) => !seen.has(e.id)).length;
+  const closeTop = () => {
+    if (reference) setReference(null);
+    else if (selection) setSelection(null);
+    else if (drawer) setDrawer(false);
+  };
+
+  // Layout classes: the flat layout is a 2–3 column grid; the immersive layout
+  // floats the same panels as sheets over the 3D lab.
+  const sheet = "fixed top-16 bottom-0 overflow-y-auto border-line bg-bg/95 backdrop-blur-md shadow-2xl";
+  const layout = immersive
+    ? {
+        wrap: "contents",
+        nav: `${sheet} left-0 z-30 w-full border-r p-4 sm:w-[340px] ${drawer ? "block" : "hidden"}`,
+        main: `${sheet} right-0 z-20 w-full p-4 sm:p-6 lg:w-[min(940px,64vw)] lg:border-l ${selection ? "block" : "hidden"}`,
+        aside: `fixed inset-0 z-40 overflow-y-auto bg-bg p-4 sm:p-6 xl:inset-auto xl:top-16 xl:bottom-0 xl:left-0 xl:w-[min(560px,34vw)] xl:border-r xl:border-line xl:bg-bg/95 xl:backdrop-blur-md`,
+      }
+    : {
+        wrap: "mx-auto grid w-full max-w-[1600px] flex-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[300px_1fr_auto]",
+        nav: `border-line p-4 lg:block lg:border-r ${selection ? "hidden" : "block"}`,
+        main: `min-w-0 p-4 sm:p-6 lg:block ${selection ? "block" : "hidden"}`,
+        aside: "fixed inset-0 z-40 overflow-y-auto bg-bg p-4 sm:p-6 xl:static xl:z-auto xl:w-[min(560px,38vw)] xl:border-l xl:border-line",
+      };
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-30 border-b border-line bg-bg/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2">
-          <Link href="/cases" className="font-[family-name:var(--font-stamp)] text-lg tracking-wide">
+      <EscapeKey onEscape={closeTop} />
+      {immersive && (
+        <div className="fixed inset-0 top-16 z-0">
+          <LabScene
+            mode="play"
+            caseTitle={view.case.title}
+            stations={view.stations.map((s) => {
+              const p = s.puzzleId ? view.puzzles.find((x) => x.id === s.puzzleId) : undefined;
+              return { ...s, title: p?.title, solved: p?.solved };
+            })}
+            evidenceCount={view.evidence.length}
+            newEvidence={newEvidence}
+            focus={drawer ? "case-file" : selection?.kind === "puzzle" ? selection.id : null}
+            panelSide={!!selection && wide}
+            showHotspots={!selection && !drawer}
+            reducedMotion={reducedMotion}
+            paused={mobile && (!!selection || drawer)}
+            mobile={mobile}
+            onSelect={(id) => select({ kind: "puzzle", id })}
+            onOpenCaseFile={() => {
+              setDrawer(true);
+              play("open");
+            }}
+            onFail={() => setSceneFailed(true)}
+          />
+          {!selection && !drawer && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-end justify-between gap-3 p-4">
+              <p className="rounded-md bg-black/60 px-3 py-2 text-xs text-[#d8d2c4] backdrop-blur">
+                Click a prop on the desk to work on it, or open the case file.
+              </p>
+              <button
+                type="button"
+                onClick={() => setDrawer(true)}
+                className="pointer-events-auto inline-flex min-h-11 items-center gap-2 rounded-md bg-[#d4b679] px-4 font-semibold text-[#2b2519] shadow-xl"
+              >
+                <span aria-hidden="true">📁</span> Case file &amp; tasks
+                {newEvidence > 0 && <span className="rounded-sm bg-[#a3271c] px-1 text-[10px] text-white">{newEvidence} new</span>}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+      <header className="sticky top-0 z-30 h-16 border-b border-line bg-bg/90 backdrop-blur">
+        <div className="mx-auto flex h-full max-w-[1600px] items-center gap-x-3 px-4">
+          <Link href="/cases" className="shrink-0 font-[family-name:var(--font-stamp)] text-base tracking-wide sm:text-lg">
             Forensicology
           </Link>
           <span className="hidden truncate text-sm text-muted md:inline">/ {view.case.title}</span>
-          <div className="ml-auto flex items-center gap-1 sm:gap-3">
+          <div className="ml-auto flex items-center gap-0.5 sm:gap-2">
             <Timer deadline={view.run.deadline} startedAt={view.run.startedAt} serverNow={view.run.serverNow} finishedAt={view.run.finishedAt} />
             <span className="hidden text-xs text-muted lg:inline">
               Hints {view.totals.hintsUsed} · Wrong {view.totals.wrongGuesses}
             </span>
-            <SoundToggle />
-            <ThemeToggle />
+            <ThreeDToggle />
+            <span className="hidden sm:contents">
+              <SoundToggle />
+              <ThemeToggle />
+            </span>
             <details className="relative">
               <summary className="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-md px-2 hover:bg-surface-2">
                 <span aria-hidden="true">☰</span>
                 <span className="sr-only">Case menu</span>
               </summary>
               <div className="absolute right-0 mt-1 w-56 rounded-md border border-line bg-surface p-1 shadow-xl">
+                <div className="flex gap-1 border-b border-line pb-1 sm:hidden">
+                  <SoundToggle />
+                  <ThemeToggle />
+                </div>
                 <button type="button" className="block w-full rounded px-3 py-2 text-left text-sm hover:bg-surface-2" onClick={() => setShowBriefing(true)}>
                   Reread the briefing
                 </button>
@@ -228,10 +352,18 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
         </div>
       </header>
 
-      <div className="mx-auto grid w-full max-w-[1600px] flex-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[300px_1fr_auto]">
+      <div className={layout.wrap}>
         {/* ---------------------------------------------------------- desk */}
-        <nav aria-label="Case file" className={`border-line p-4 lg:block lg:border-r ${selection ? "hidden" : "block"}`}>
-          <div className="space-y-6 lg:sticky lg:top-20">
+        <nav aria-label="Case file" className={layout.nav}>
+          {immersive && (
+            <div className="mb-4 flex items-center justify-between">
+              <span className="font-[family-name:var(--font-stamp)] text-lg">Case file</span>
+              <Button variant="ghost" onClick={() => setDrawer(false)}>
+                Close <span aria-hidden="true">✕</span>
+              </Button>
+            </div>
+          )}
+          <div className={`space-y-6 ${immersive ? "" : "lg:sticky lg:top-20"}`}>
             <section aria-labelledby="tasks-heading">
               <h2 id="tasks-heading" className="mb-2 text-xs font-bold tracking-widest text-muted uppercase">
                 Tasks
@@ -292,13 +424,13 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
         </nav>
 
         {/* ---------------------------------------------------------- workspace */}
-        <main id="main" ref={mainRef} className={`min-w-0 p-4 sm:p-6 lg:block ${selection ? "block" : "hidden"}`}>
+        <main id="main" ref={mainRef} className={layout.main}>
           {selection && (
-            <Button variant="ghost" className="mb-3 lg:hidden" onClick={() => setSelection(null)}>
-              ← Back to case file
+            <Button variant="ghost" className={`mb-3 ${immersive ? "" : "lg:hidden"}`} onClick={() => setSelection(null)}>
+              {immersive ? "← Back to the lab" : "← Back to case file"}
             </Button>
           )}
-          {!selection && (
+          {!selection && !immersive && (
             <div className="mx-auto max-w-2xl space-y-4 py-8 text-center">
               <h2 tabIndex={-1} className="font-[family-name:var(--font-stamp)] text-2xl outline-none">
                 {view.case.title}
@@ -339,7 +471,7 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
         {referenceEvidence && (
           <aside
             aria-label={`Reference: ${referenceEvidence.title}`}
-            className="fixed inset-0 z-40 overflow-y-auto bg-bg p-4 sm:p-6 xl:static xl:z-auto xl:w-[min(560px,38vw)] xl:border-l xl:border-line"
+            className={layout.aside}
           >
             <div className="mb-3 flex items-center justify-between">
               <span className="text-xs font-bold tracking-widest text-muted uppercase">Reference</span>
@@ -418,4 +550,21 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
       {children}
     </dialog>
   );
+}
+
+/** Escape closes the topmost sheet. Listens on the window because focus may be on <body>. */
+function EscapeKey({ onEscape }: { onEscape: () => void }) {
+  const latest = useRef(onEscape);
+  useEffect(() => {
+    latest.current = onEscape;
+  });
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || document.querySelector("dialog[open]")) return;
+      latest.current();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+  return null;
 }

@@ -3,6 +3,11 @@ import { expect, test, type Page } from "@playwright/test";
 
 const SLUG = "greenhouse-affair";
 
+// These tests cover the flat layout (the 2D fallback). tests/e2e/lab-3d.spec.ts covers the 3D lab.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("fx-3d", "off"));
+});
+
 async function expectAccessible(page: Page, label: string) {
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");

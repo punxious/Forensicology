@@ -163,3 +163,16 @@ describe("a full play-through", () => {
     expect(JSON.stringify(views[1])).not.toContain(unrevealedHint);
   });
 });
+
+describe("3D stations", () => {
+  it("lists every puzzle's prop but hides locked puzzles' ids", () => {
+    const v = buildView(c, newRunState(c.slug, "r", T0), T0);
+    expect(v.stations).toHaveLength(c.puzzles.length);
+    expect(v.stations.filter((s) => s.puzzleId !== null).map((s) => s.puzzleId)).toEqual(["desk-drawer"]);
+    expect(v.stations.map((s) => s.kind)).toEqual(["lockbox", "timeline", "recorder", "corkboard", "microscope", "lightbox", "journal", "report"]);
+    const text = JSON.stringify(v.stations);
+    // Only the prop kind is exposed: no titles, and no puzzle ids beyond the open one.
+    for (const p of c.puzzles) expect(text).not.toContain(p.title);
+    expect(v.stations.every((s) => Object.keys(s).sort().join() === "index,kind,puzzleId")).toBe(true);
+  });
+});

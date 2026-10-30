@@ -8,6 +8,7 @@ import { availablePuzzleIds, unlockedEvidenceIds } from "./graph";
 import { hashAnswer, matchesAnyHash } from "./hash";
 import { normalizeAnswer } from "./normalize";
 import { computeScore, hintCostFor, type ScoreResult } from "./scoring";
+import { stationKind, type StationKind } from "./stations";
 import type { CompiledCase, CompiledEvidence, CompiledPuzzle, PuzzleConfigByType, PuzzleType } from "./types";
 
 export type RunState = {
@@ -76,6 +77,11 @@ export type RunView = {
   evidence: PublicEvidence[];
   puzzles: PublicPuzzle[];
   lockedPuzzleCount: number;
+  /**
+   * One prop per puzzle, in case order, for the 3D lab. Locked puzzles show
+   * only their prop kind (`puzzleId: null`), never their title or content.
+   */
+  stations: { index: number; kind: StationKind; puzzleId: string | null }[];
   totals: { hintsUsed: number; wrongGuesses: number };
   result: null | {
     score: number;
@@ -162,6 +168,7 @@ export function buildView(c: CompiledCase, s: RunState, now: number): RunView {
     evidence,
     puzzles,
     lockedPuzzleCount: c.puzzles.length - puzzles.length,
+    stations: c.puzzles.map((p, index) => ({ index, kind: stationKind(p), puzzleId: available.has(p.id) ? p.id : null })),
     totals: {
       hintsUsed: Object.values(s.hints).reduce((a, b) => a + b, 0),
       wrongGuesses: Object.values(s.wrong).reduce((a, b) => a + b, 0),

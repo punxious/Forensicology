@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { setSoundEnabled, soundEnabled, play } from "@/lib/client/sfx";
+import { setThreeD, useThreeD } from "@/lib/client/three-pref";
 
 export function SoundToggle() {
   const [on, setOn] = useState(false);
@@ -47,6 +48,24 @@ export function ThemeToggle() {
       <span aria-hidden="true">{theme === "lab" ? "🌙" : "📁"}</span>
       <span className="sr-only">Theme: </span>
       <span className="sr-only sm:not-sr-only">{theme === "lab" ? "Lab" : "Case file"}</span>
+    </button>
+  );
+}
+
+export function ThreeDToggle() {
+  const mode = useThreeD();
+  if (mode === "pending") return <span className="inline-block min-h-11 min-w-11" aria-hidden="true" />;
+  const on = mode === "on";
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={() => setThreeD(!on)}
+      title={on ? "Switch to the flat layout" : "Switch to the 3D lab"}
+      className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-md px-2 text-sm font-semibold hover:bg-surface-2"
+    >
+      <span aria-hidden="true">{on ? "◆" : "◇"}</span>
+      <span>3D</span>
     </button>
   );
 }

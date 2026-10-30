@@ -2,7 +2,7 @@
 
 Web-based forensic escape rooms. Players examine evidence, crack forensic puzzles and make a final accusation (suspect + motive + method) against the clock.
 
-**Status: Phase 1.** The case engine, eight puzzle components and the free sample case, *The Greenhouse Affair*, are playable end to end without an account. Auth, payments, co-op and deployment come in Phases 2–5.
+**Status: Phase 2a.** The case engine, eight puzzle components and the free sample case, *The Greenhouse Affair*, are playable end to end without an account, in an immersive 3D crime lab (with a flat fallback). Accounts and leaderboards (2b), payments, co-op and deployment come next.
 
 ## Quick start
 
@@ -23,7 +23,7 @@ You don't need a `.env.local` for development because safe dev secrets are used.
 | Command | What it does |
 |---|---|
 | `pnpm test` | Unit tests: answer normalisation and hashing, unlock-graph validation, scoring, a full engine play-through, leak checks on every API view, run-token tampering, and the rate limiter |
-| `pnpm test:e2e` | Builds for production and plays the whole case in Chromium at desktop and phone sizes. Runs axe WCAG 2.1 AA checks on every puzzle and checks that progress survives a reload and that locked puzzles are refused |
+| `pnpm test:e2e` | Builds for production. Plays the whole case in the flat layout at desktop and phone sizes, with axe WCAG 2.1 AA checks on every puzzle. Drives the 3D lab through its prop labels, the archive shelf and the landing hero (software WebGL). Checks that progress survives a reload and that locked puzzles are refused |
 | `pnpm test:leaks` | Run after `pnpm build`. Scans the client bundle for answer hashes, hints, lab results and the epilogue |
 | `pnpm lint` / `pnpm typecheck` | ESLint and TypeScript |
 | `pnpm case:build --check` | Validates every case without writing output |
@@ -135,6 +135,42 @@ Fingerprint evidence uses `kind: print` with `print: {pattern: loop|whorl|arch, 
 
 It also warns when a puzzle can be skipped on the way to the accusation.
 
+## The 3D world
+
+Built with three.js via react-three-fiber. Every prop is modelled in code (`components/three/objects.tsx`) with procedural canvas textures (`textures.ts`), so there are no model or image downloads.
+
+| Page | Scene | Loading |
+|---|---|---|
+| `/` | A desk under a lamp, with a UV torch sweeping hidden ink | A still poster paints first. The live scene loads on first interaction (desktop) or when you tap "View in 3D" (phones). |
+| `/cases` | An archive shelf of case boxes; real cases sit among sealed "classified" boxes | Same as `/` |
+| `/play/<slug>` | The crime lab. Each puzzle is a prop on the desk or wall; locked puzzles are taped "sealed" and show only their prop | Loads immediately when 3D is on |
+
+**How a puzzle maps to a prop.** The puzzle type picks the prop automatically (`lib/engine/stations.ts`), so cases need no scene data:
+
+| Puzzle type | Prop |
+|---|---|
+| Keypad or padlock lock | Lockbox |
+| Word lock | Journal |
+| Dial lock | Safe |
+| Timeline | Wall timeline |
+| Statements | Tape recorder |
+| Lab | Microscope |
+| Fingerprint | Light box |
+| Board | Corkboard |
+| Accusation | Final report |
+
+**Readable overlays.** Clicking a prop eases the camera to it. The puzzle or document then opens in a sheet over the scene, and the case file opens as a drawer. Prop labels are real DOM buttons positioned over the scene each frame (`Projector.tsx`), so they are keyboard- and screen-reader-accessible. The canvas itself is `aria-hidden`.
+
+**Fallbacks.**
+- The ◆ 3D button in every header switches to the flat layout, and the choice is remembered.
+- Devices that report low memory or data-saver mode, or that lack WebGL, default to flat.
+- If the WebGL context fails, the page drops back to flat automatically.
+- Reduced motion turns off camera easing, drift and parallax.
+
+**Posters.** After changing `LandingScene` or `GalleryScene`, run `pnpm dev`, then `node scripts/capture-posters.mjs` to regenerate `public/posters/*.jpg`.
+
+**Lighthouse (landing page, production build):** Performance 92–94 mobile / 100 desktop (varies run to run), Accessibility 100, SEO 100, Best practices 100.
+
 ## Accessibility
 
 Every puzzle can be played with a keyboard and a touch screen, and none of them rely on colour alone:
@@ -151,7 +187,7 @@ Deploy to Vercel with `ANSWER_PEPPER` and `RUN_TOKEN_SECRET` set for the Product
 
 ## Roadmap
 
-- **Phase 2:** Supabase auth, runs in Postgres, leaderboards, full landing page.
+- **Phase 2b:** Supabase auth (Sydney region), runs in Postgres, scores, leaderboards, and the rest of the landing page (pricing, FAQ, teams).
 - **Phase 3:** Stripe Checkout, webhooks and entitlements, gift codes, admin case uploader. It reuses `lib/engine/compile.ts` and the debug panel.
 - **Phase 4:** Real-time co-op with Supabase Realtime.
 - **Phase 5:** Accessibility audit, performance, SEO, analytics, Sentry, production deploy.
