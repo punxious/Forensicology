@@ -12,3 +12,4 @@ lib/server/generated/
 test-results/
 playwright-report/
 .DS_Store
+.data/

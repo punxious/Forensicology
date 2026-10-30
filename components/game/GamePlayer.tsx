@@ -20,9 +20,20 @@ import { SoundToggle, ThemeToggle, ThreeDToggle } from "./Toggles";
 const LabScene = dynamic(() => import("@/components/three/LabScene"), { ssr: false });
 
 type Selection = { kind: "evidence" | "puzzle"; id: string } | null;
+export type AccountInfo = { signedIn: boolean; canSignIn: boolean; leaderboardOptIn: boolean };
 type Toast = { id: number; text: string; evidenceId?: string; puzzleId?: string };
 
-export function GamePlayer({ briefing, initialView, debug }: { briefing: BriefingInfo; initialView: RunView | null; debug: boolean }) {
+export function GamePlayer({
+  briefing,
+  initialView,
+  debug,
+  account,
+}: {
+  briefing: BriefingInfo;
+  initialView: RunView | null;
+  debug: boolean;
+  account: AccountInfo;
+}) {
   const api = useMemo(() => gameApi(briefing.slug), [briefing.slug]);
   const [view, setView] = useState<RunView | null>(initialView);
   const [selection, setSelection] = useState<Selection>(null);
@@ -231,7 +242,7 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
       <div className="relative isolate min-h-dvh">
         {backdrop("done", view.stations)}
         <div className="relative">
-          <ResultScreen view={view} onRestart={() => start(true)} />
+          <ResultScreen view={view} onRestart={() => start(true)} account={account} />
         </div>
       </div>
     );
@@ -335,6 +346,17 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
                   <SoundToggle />
                   <ThemeToggle />
                 </div>
+                {account.canSignIn && (
+                  <Link
+                    href={account.signedIn ? "/account" : `/login?next=/play/${view.case.slug}`}
+                    className="block rounded px-3 py-2 text-sm hover:bg-surface-2"
+                  >
+                    {account.signedIn ? "Your account" : "Sign in to save progress"}
+                  </Link>
+                )}
+                <Link href={`/cases/${view.case.slug}/leaderboard`} className="block rounded px-3 py-2 text-sm hover:bg-surface-2">
+                  Leaderboard
+                </Link>
                 <button type="button" className="block w-full rounded px-3 py-2 text-left text-sm hover:bg-surface-2" onClick={() => setShowBriefing(true)}>
                   Reread the briefing
                 </button>
@@ -364,6 +386,7 @@ export function GamePlayer({ briefing, initialView, debug }: { briefing: Briefin
             </div>
           )}
           <div className={`space-y-6 ${immersive ? "" : "lg:sticky lg:top-20"}`}>
+            {account.canSignIn && !account.signedIn && solved.length > 0 && <SavePrompt slug={view.case.slug} />}
             <section aria-labelledby="tasks-heading">
               <h2 id="tasks-heading" className="mb-2 text-xs font-bold tracking-widest text-muted uppercase">
                 Tasks
@@ -567,4 +590,46 @@ function EscapeKey({ onEscape }: { onEscape: () => void }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
   return null;
+}
+
+/** Nudges anonymous players to sign in once they've made progress worth keeping. */
+function SavePrompt({ slug }: { slug: string }) {
+  const key = "fx-save-prompt-dismissed";
+  const [dismissed, setDismissed] = useState(true);
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- read a browser-only preference after hydration
+      setDismissed(sessionStorage.getItem(key) === "1");
+    } catch {
+      setDismissed(false);
+    }
+  }, []);
+  if (dismissed) return null;
+  return (
+    <aside aria-label="Save your progress" className="space-y-2 rounded-md border border-folder bg-surface-2 p-3 text-sm">
+      <p>
+        <span aria-hidden="true">💾 </span>
+        Progress is saved in this browser. Sign in to keep it on any device and get on the leaderboard.
+      </p>
+      <div className="flex gap-2">
+        <Link href={`/login?next=/play/${slug}`} className="inline-flex min-h-11 items-center rounded-md bg-accent px-3 font-semibold text-accent-ink">
+          Sign in
+        </Link>
+        <button
+          type="button"
+          onClick={() => {
+            setDismissed(true);
+            try {
+              sessionStorage.setItem(key, "1");
+            } catch {
+              /* ignore */
+            }
+          }}
+          className="inline-flex min-h-11 items-center rounded-md px-3 hover:bg-surface-2"
+        >
+          Not now
+        </button>
+      </div>
+    </aside>
+  );
 }

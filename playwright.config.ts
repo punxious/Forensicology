@@ -29,7 +29,15 @@ export default defineConfig({
     reuseExistingServer: false,
     env: {
       ANSWER_PEPPER: "e2e-pepper-not-secret-0123456789abcdef0123",
-      RUN_TOKEN_SECRET: "e2e-run-secret-not-secret-0123456789abcdef",
+      COOKIE_SECRET: "e2e-cookie-secret-not-secret-0123456789abcdef",
+      // Local-only switches: instant email sign-in and an in-memory database,
+      // so e2e runs need no Supabase project. Ignored on Vercel.
+      FX_DEV_AUTH: "1",
+      FX_LOCAL_DB: "1",
+      FX_PGLITE_DIR: "memory://",
+      DATABASE_URL: "",
+      NEXT_PUBLIC_SUPABASE_URL: "",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "",
     },
   },
 });

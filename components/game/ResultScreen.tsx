@@ -4,8 +4,9 @@ import Link from "next/link";
 import type { RunView } from "@/lib/engine/game";
 import { formatDuration } from "@/lib/client/format";
 import { Button, Html, Stamp } from "@/components/ui/primitives";
+import type { AccountInfo } from "./GamePlayer";
 
-export function ResultScreen({ view, onRestart }: { view: RunView; onRestart: () => void }) {
+export function ResultScreen({ view, onRestart, account }: { view: RunView; onRestart: () => void; account: AccountInfo }) {
   const r = view.result!;
   const b = r.breakdown;
   const rows: [string, number][] = [
@@ -52,6 +53,38 @@ export function ResultScreen({ view, onRestart }: { view: RunView; onRestart: ()
             </tr>
           </tbody>
         </table>
+      </section>
+
+      <section aria-label="Leaderboard" className="rounded-md border border-uv/50 bg-surface p-5 text-center">
+        {account.signedIn ? (
+          account.leaderboardOptIn ? (
+            <p>
+              Your first solve of each case goes on the board.{" "}
+              <Link href={`/cases/${view.case.slug}/leaderboard`} className="font-semibold underline">
+                See the leaderboard
+              </Link>
+            </p>
+          ) : (
+            <p>
+              Want your time on the board?{" "}
+              <Link href="/account#settings" className="font-semibold underline">
+                Pick a display name and opt in
+              </Link>
+              .
+            </p>
+          )
+        ) : account.canSignIn ? (
+          <p>
+            <Link href={`/login?next=/play/${view.case.slug}`} className="font-semibold underline">
+              Sign in to save this result
+            </Link>{" "}
+            and put your time on the leaderboard. It&apos;ll still count as your first solve.
+          </p>
+        ) : (
+          <Link href={`/cases/${view.case.slug}/leaderboard`} className="font-semibold underline">
+            See the leaderboard
+          </Link>
+        )}
       </section>
 
       <section className="paper doc rounded-sm px-6 py-8 sm:px-10" aria-label="Epilogue">

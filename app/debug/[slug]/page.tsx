@@ -7,7 +7,7 @@ import { ancestors, puzzleDepths, validateGraph } from "@/lib/engine/graph";
 import type { CaseSource } from "@/lib/engine/schema";
 import { getCase } from "@/lib/server/cases";
 import { debugToolsEnabled } from "@/lib/server/debug";
-import { loadRun } from "@/lib/server/runs";
+import { loadCurrentRun } from "@/lib/server/runs";
 
 export const metadata = { title: "Debug", robots: { index: false } };
 
@@ -31,7 +31,7 @@ export default async function DebugPage({ params }: Props) {
   const file = path.join(process.cwd(), "cases", slug, "case.yaml");
   const parsed = fs.existsSync(file) ? parseCaseSource(fs.readFileSync(file, "utf8")) : null;
   const source: CaseSource | null = parsed?.ok ? parsed.source : null;
-  const run = await loadRun(compiled);
+  const run = await loadCurrentRun(compiled);
   const solved = new Set(run?.solved ?? []);
 
   const depths = puzzleDepths(compiled);

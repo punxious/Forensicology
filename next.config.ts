@@ -9,6 +9,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Loaded at runtime from node_modules (WASM + file system access).
+  serverExternalPackages: ["@electric-sql/pglite"],
   reactStrictMode: true,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
