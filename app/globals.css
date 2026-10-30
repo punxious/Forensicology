@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------- tokens
+   Two themes: "manila" (case-file paper, light) and "lab" (dark, UV-violet).
+   The inline script in layout.tsx sets data-theme before first paint. */
+
+:root,
+:root[data-theme="manila"] {
+  color-scheme: light;
+  --bg: #e9e0cc;
+  --surface: #f6efdf;
+  --surface-2: #efe5cf;
+  --ink: #221f1a;
+  --muted: #5a5244;
+  --line: #c9b994;
+  --folder: #d8bd82;
+  --folder-ink: #3d3220;
+  --accent: #9e2b20;
+  --accent-ink: #ffffff;
+  --uv: #6a3fd8;
+  --uv-glow: #b98cff;
+  --ok: #1f6a3a;
+  --warn: #8a4b00;
+  --paper: #f8f2e3;
+  --paper-ink: #24211b;
+  --paper-line: #d8ccb0;
+  --focus: #6a3fd8;
+}
+
+:root[data-theme="lab"] {
+  color-scheme: dark;
+  --bg: #0d0f13;
+  --surface: #151820;
+  --surface-2: #1b1f29;
+  --ink: #e8e4da;
+  --muted: #a0a6b2;
+  --line: #2c3240;
+  --folder: #2b2519;
+  --folder-ink: #e6d3a6;
+  --accent: #ff7a63;
+  --accent-ink: #1a0b08;
+  --uv: #b393ff;
+  --uv-glow: #d6c2ff;
+  --ok: #6fd69a;
+  --warn: #ffb35c;
+  --paper: #e9e1cd;
+  --paper-ink: #1f1c16;
+  --paper-line: #cfc2a3;
+  --focus: #c6aaff;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-folder: var(--folder);
+  --color-folder-ink: var(--folder-ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-uv: var(--uv);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-paper: var(--paper);
+  --color-paper-ink: var(--paper-ink);
+  --color-paper-line: var(--paper-line);
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Courier Prime", ui-monospace, "Courier New", monospace;
+  --font-stamp: "Special Elite", "Courier Prime", monospace;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* ---------------------------------------------------------------- paper documents */
+
+.paper {
+  background: var(--paper);
+  color: var(--paper-ink);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 27px,
+    color-mix(in srgb, var(--paper-line) 45%, transparent) 27px 28px
+  );
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.06),
+    0 10px 30px -12px rgba(0, 0, 0, 0.35);
+}
+:root[data-theme="lab"] .paper {
+  filter: brightness(0.94);
+}
+
+.doc {
+  font-family: var(--font-mono);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+.doc h1,
+.doc h2,
+.doc h3 {
+  font-family: var(--font-stamp);
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  margin: 1.1em 0 0.4em;
+}
+.doc h1 { font-size: 1.45rem; }
+.doc h2 { font-size: 1.2rem; }
+.doc h3 { font-size: 1.05rem; }
+.doc > :first-child { margin-top: 0; }
+.doc p, .doc ul, .doc ol, .doc table, .doc blockquote { margin: 0.6em 0; }
+.doc ul { list-style: disc; padding-left: 1.4em; }
+.doc ol { list-style: decimal; padding-left: 1.4em; }
+.doc hr { border: 0; border-top: 1px dashed currentColor; opacity: 0.4; margin: 1em 0; }
+.doc blockquote { border-left: 3px solid currentColor; padding-left: 0.8em; opacity: 0.9; }
+.doc small { font-size: 0.8rem; opacity: 0.8; }
+.doc table { width: 100%; border-collapse: collapse; font-size: 0.9rem; display: block; overflow-x: auto; }
+.doc th, .doc td { border-bottom: 1px solid color-mix(in srgb, currentColor 25%, transparent); padding: 0.35em 0.5em; text-align: left; vertical-align: top; }
+.doc th { font-weight: 700; }
+.doc a { text-decoration: underline; }
+
+.redacted {
+  background: currentColor;
+  color: transparent;
+  border-radius: 1px;
+  user-select: none;
+}
+
+.stamp {
+  display: inline-block;
+  font-family: var(--font-stamp);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  border: 3px double currentColor;
+  padding: 0.15em 0.6em;
+  transform: rotate(-4deg);
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+:root[data-theme="lab"] .stamp { mix-blend-mode: normal; }
+.paper .stamp { color: #a3271c; }
+
+/* ---------------------------------------------------------------- UV ink
+   Invisible normally. Under the torch, each span gets a radial gradient
+   centred on the torch position (set per span from JS as --x/--y). */
+
+.uv-ink {
+  color: transparent;
+  user-select: none;
+}
+[data-uv-mode="on"] .uv-ink {
+  background-image: radial-gradient(circle var(--uv-r, 80px) at var(--x, -999px) var(--y, -999px), #c9a7ff 0 55%, transparent 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: none;
+}
+[data-uv-mode="on"] .uv-ink[data-found="true"] {
+  /* Once found, keep a faint trace so players can find it again. */
+  background-image:
+    radial-gradient(circle var(--uv-r, 80px) at var(--x, -999px) var(--y, -999px), #c9a7ff 0 55%, transparent 100%),
+    linear-gradient(rgba(150, 110, 230, 0.35), rgba(150, 110, 230, 0.35));
+}
+[data-uv-mode="on"].paper {
+  background: #1a1430;
+  color: rgba(225, 215, 255, 0.28);
+  background-image: none;
+  filter: none;
+}
+[data-uv-mode="on"] .stamp { color: rgba(225, 215, 255, 0.28); }
+
+/* ---------------------------------------------------------------- motion */
+
+@keyframes fx-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(3px); }
+  30%, 50%, 70% { transform: translateX(-6px); }
+  40%, 60% { transform: translateX(6px); }
+}
+.fx-shake { animation: fx-shake 0.45s both; }
+
+@keyframes fx-stamp-in {
+  0% { transform: scale(1.8) rotate(-12deg); opacity: 0; }
+  60% { transform: scale(0.95) rotate(-5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-6deg); opacity: 1; }
+}
+.fx-stamp-in { animation: fx-stamp-in 0.35s ease-out both; }
+
+@keyframes fx-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

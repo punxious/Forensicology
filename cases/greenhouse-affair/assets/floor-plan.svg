@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" font-family="'Courier Prime', 'Courier New', monospace" font-size="13">
+  <rect width="640" height="520" fill="#f3ead6"/>
+  <g stroke="#2b2a26" fill="none">
+    <!-- glasshouse walls -->
+    <rect x="40" y="40" width="560" height="420" stroke-width="3"/>
+    <!-- roof vents (dashed ridge) -->
+    <line x1="60" y1="250" x2="580" y2="250" stroke-dasharray="10 8" stroke-width="1.5"/>
+  </g>
+  <text x="320" y="243" text-anchor="middle" font-size="11" fill="#2b2a26">ROOF VENTS (CLOSED)</text>
+  <text x="320" y="30" text-anchor="middle" font-size="14" fill="#2b2a26" font-weight="bold">VICTORIA GLASSHOUSE · N ↑</text>
+
+  <g fill="#e2d6b8" stroke="#2b2a26" stroke-width="1.5">
+    <rect x="60" y="60" width="150" height="80"/>
+    <rect x="60" y="160" width="150" height="80"/>
+    <rect x="60" y="270" width="150" height="80"/>
+    <rect x="245" y="60" width="150" height="80"/>
+    <rect x="245" y="160" width="150" height="70"/>
+    <rect x="245" y="300" width="150" height="70"/>
+    <rect x="430" y="60" width="150" height="80"/>
+    <rect x="430" y="160" width="150" height="80"/>
+    <rect x="430" y="270" width="150" height="80"/>
+  </g>
+  <g fill="#2b2a26">
+    <text x="70" y="82" font-weight="bold">BED 1</text><text x="70" y="102">Asplenium</text><text x="70" y="118">fennimorense</text>
+    <text x="70" y="182" font-weight="bold">BED 2</text><text x="70" y="202">Salvia</text>
+    <text x="70" y="292" font-weight="bold">BED 3</text><text x="70" y="312">Digitalis</text><text x="70" y="328">purpurea</text>
+    <text x="255" y="82" font-weight="bold">BED 4</text><text x="255" y="102">Aloysia</text><text x="255" y="118">citrodora</text>
+    <text x="255" y="182" font-weight="bold">BED 5</text><text x="255" y="202">Seed trays</text>
+    <text x="255" y="322" font-weight="bold">BED 6</text><text x="255" y="342">Orchids</text>
+    <text x="440" y="82" font-weight="bold">BED 7</text><text x="440" y="102">Nerium</text><text x="440" y="118">oleander</text>
+    <text x="440" y="182" font-weight="bold">BED 8</text><text x="440" y="202">Citrus</text>
+    <text x="440" y="292" font-weight="bold">BED 9</text><text x="440" y="312">Tree ferns</text>
+  </g>
+
+  <!-- victim position: between beds 4 and 5 -->
+  <g stroke="#2b2a26" stroke-width="3">
+    <line x1="402" y1="138" x2="418" y2="154"/><line x1="418" y1="138" x2="402" y2="154"/>
+  </g>
+  <text x="400" y="172" font-size="11" fill="#2b2a26" text-anchor="end">FOUND HERE</text>
+
+  <!-- potting bench by door -->
+  <rect x="200" y="395" width="170" height="40" fill="#cdbf9c" stroke="#2b2a26" stroke-width="1.5"/>
+  <text x="210" y="420" fill="#2b2a26">POTTING BENCH</text>
+  <circle cx="340" cy="405" r="9" fill="#f3ead6" stroke="#2b2a26" stroke-width="1.5"/><text x="336" y="409" font-size="11" font-weight="bold">A</text>
+  <circle cx="360" cy="425" r="9" fill="#f3ead6" stroke="#2b2a26" stroke-width="1.5"/><text x="356" y="429" font-size="11" font-weight="bold">B</text>
+
+  <!-- door with keypad, south wall -->
+  <rect x="270" y="455" width="80" height="10" fill="#f3ead6" stroke="#2b2a26" stroke-width="2"/>
+  <text x="310" y="485" text-anchor="middle" fill="#2b2a26">DOOR (auto-lock)</text>
+  <rect x="356" y="468" width="16" height="20" fill="#2b2a26"/><text x="378" y="483" fill="#2b2a26" font-size="11">KEYPAD</text>
+
+  <!-- store cupboard SE -->
+  <rect x="500" y="380" width="80" height="60" fill="#cdbf9c" stroke="#2b2a26" stroke-width="1.5"/>
+  <text x="508" y="405" font-size="11" fill="#2b2a26">CHEMICAL</text><text x="508" y="421" font-size="11" fill="#2b2a26">STORE</text>
+</svg>

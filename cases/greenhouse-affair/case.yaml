@@ -1,0 +1,515 @@
+# The Greenhouse Affair
+#
+# Source file for a Forensicology case. Answers here are plaintext; the build
+# step (`pnpm case:build`) validates this file, hashes every answer and emits a
+# server-only bundle. See README.md → "Writing a case".
+
+slug: greenhouse-affair
+version: 1
+title: The Greenhouse Affair
+tagline: A botanist collapses inside her locked glasshouse. The police say accident. The evidence disagrees.
+difficulty: 2
+durationMinutes: 60
+players: { min: 1, max: 6 }
+free: true
+briefing: documents/briefing.md
+epilogue: documents/epilogue.md
+
+evidence:
+  # ------------------------------------------------------------ initial
+  - id: incident-report
+    kind: document
+    title: Incident Report AV-0614
+    tag: EV-01
+    summary: DS Nandakumar's report. The police are treating it as an accident.
+    initial: true
+    document: documents/incident-report.md
+
+  - id: floor-plan
+    kind: image
+    title: Glasshouse Floor Plan
+    tag: EV-02
+    summary: Scene sketch of the Victoria Glasshouse, with bed numbers.
+    initial: true
+    image: assets/floor-plan.svg
+    imageAlt: >-
+      Floor plan of the Victoria Glasshouse. The single door with a keypad is on the south wall, roof vents
+      run along the centre. Beds along the west wall, north to south: Bed 1 Asplenium fennimorense
+      (Fennimore fern), Bed 2 Salvia, Bed 3 Digitalis purpurea (foxglove). Centre beds: Bed 4 Aloysia
+      citrodora (lemon verbena), Bed 5 seed trays, Bed 6 orchids. East wall: Bed 7 Nerium oleander,
+      Bed 8 citrus, Bed 9 tree ferns. The potting bench sits by the door; a flask (marked A) and an
+      uncapped Thornguard canister (marked B) are on it. A cross between beds 4 and 5 marks where
+      Dr Marchetti was found. The chemical store cupboard is in the south-east corner.
+    document: documents/floor-plan-notes.md
+
+  - id: notebook
+    kind: document
+    title: Field Notebook (page 41)
+    tag: EV-03
+    summary: A page from Dr Marchetti's notebook, recovered from the potting bench.
+    initial: true
+    document: documents/notebook.md
+
+  - id: greenhouse-diary
+    kind: document
+    title: Glasshouse Work Diary
+    tag: EV-04
+    summary: The shared diary where staff log every job done in the glasshouse.
+    initial: true
+    document: documents/greenhouse-diary.md
+
+  - id: persons-of-interest
+    kind: document
+    title: Persons of Interest
+    tag: EV-05
+    summary: Background on the people closest to Dr Marchetti.
+    initial: true
+    document: documents/persons-of-interest.md
+
+  - id: rail-ticket
+    kind: document
+    title: Rail Ticket and Receipt
+    tag: EV-06
+    summary: Handed over by Felix Marchetti when he was traced on Saturday.
+    initial: true
+    document: documents/rail-ticket.md
+
+  # ------------------------------------------------------------ desk drawer
+  - id: access-log
+    kind: document
+    title: Glasshouse Door Keypad Log
+    tag: EV-07
+    summary: Printout of every time the glasshouse door opened, Thursday and Friday.
+    document: documents/access-log.md
+
+  - id: drawer-note
+    kind: document
+    title: Note Found in the Drawer
+    tag: EV-08
+    summary: A sticky note in Dr Marchetti's handwriting.
+    document: documents/drawer-note.md
+
+  - id: phone-records
+    kind: document
+    title: Phone Records — O. Marchetti
+    tag: EV-09
+    summary: Calls and messages from the victim's mobile on Friday.
+    document: documents/phone-records.md
+
+  - id: library-log
+    kind: document
+    title: Trust Library Access Log
+    tag: EV-10
+    summary: Badge reader and computer terminal records from the Trust library.
+    document: documents/library-log.md
+
+  # ------------------------------------------------------------ statements
+  - id: statement-wren
+    kind: transcript
+    title: Statement — Wren Talbot
+    tag: EV-11
+    summary: Research assistant. Interviewed Saturday 09:30.
+    intro: Interview conducted by DS P. Nandakumar, Saturday 15 June, 09:30. Transcript extract.
+    lines:
+      - { id: wren-1, speaker: Talbot, text: "I'm Odile's research assistant. Three years now, mostly on the Fennimore fern project." }
+      - { id: wren-2, speaker: Talbot, text: "On Friday I was in the glasshouse with her until about half past four, repotting seedlings." }
+      - { id: wren-3, speaker: Talbot, text: "She seemed fine. Tired. She always had that flask of lemon verbena tea with her." }
+      - { id: wren-4, speaker: Talbot, text: "After I left at half four I didn't hear from Odile again." }
+      - { id: wren-5, speaker: Talbot, text: "I went to the library and stayed there writing up, from quarter to five until six. I never left." }
+      - { id: wren-6, speaker: Talbot, text: "I pruned the oleander on Wednesday because she asked me to. It was growing over the path." }
+      - { id: wren-7, speaker: Talbot, text: "I can't believe she'd be careless with Thornguard. She'd been distracted lately, though." }
+
+  - id: statement-hollis
+    kind: transcript
+    title: Statement — Hollis Crane
+    tag: EV-12
+    summary: Director of the Fennimore Botanical Trust. Interviewed Saturday 11:00.
+    intro: Interview conducted by DS P. Nandakumar, Saturday 15 June, 11:00. Transcript extract.
+    lines:
+      - { id: hollis-1, speaker: Crane, text: "Odile and I disagreed about selling the east meadow. It was professional, never personal." }
+      - { id: hollis-2, speaker: Crane, text: "I was at the planning committee in town from four o'clock until it closed at a quarter past six." }
+      - { id: hollis-3, speaker: Crane, text: "My phone was on silent. I only saw her text — 'Feeling very odd, heart all over the place' — at about twenty past six." }
+      - { id: hollis-4, speaker: Crane, text: "The main door code is shared by Odile, Wren and me. Abe has his own code for the grounds team." }
+      - { id: hollis-5, speaker: Crane, text: "I gave your officers the code myself. I haven't set foot in the glasshouse since Tuesday." }
+
+  - id: statement-felix
+    kind: transcript
+    title: Statement — Felix Marchetti
+    tag: EV-13
+    summary: Nephew and next of kin. Interviewed Saturday 14:15.
+    intro: Interview conducted by DS P. Nandakumar, Saturday 15 June, 14:15. Transcript extract.
+    lines:
+      - { id: felix-1, speaker: F. Marchetti, text: "Aunt Odile and I weren't close. I hadn't seen her in about two years." }
+      - { id: felix-2, speaker: F. Marchetti, text: "On Friday I took the train to Kingsmere for a job interview and stayed over with a friend." }
+      - { id: felix-3, speaker: F. Marchetti, text: "I know how it looks. I get the cottage. I didn't even know she'd left it to me." }
+      - { id: felix-4, speaker: F. Marchetti, text: "I don't know the first thing about plants. Never have." }
+
+  - id: statement-abe
+    kind: transcript
+    title: Statement — Abe Lindqvist
+    tag: EV-14
+    summary: Head groundskeeper. Found Dr Marchetti. Interviewed Friday 21:10.
+    intro: Interview conducted by PC J. Okafor, Friday 14 June, 21:10. Transcript extract.
+    lines:
+      - { id: abe-1, speaker: Lindqvist, text: "Thornguard lives in the locked store cupboard. I last used it Monday, on the roses outside. Never indoors." }
+      - { id: abe-2, speaker: Lindqvist, text: "Thursday morning, about half eleven, her nephew was in the glasshouse with her. They were having words." }
+      - { id: abe-3, speaker: Lindqvist, text: "I found her at about twenty to seven. Door locked, vents shut. I used my own code to get in." }
+      - { id: abe-4, speaker: Lindqvist, text: "The canister was on the potting bench with the cap off. It's never kept there." }
+
+  - id: council-minutes
+    kind: document
+    title: Planning Committee Minutes (extract)
+    tag: EV-15
+    summary: Ashcombe Vale Planning Committee, Friday 14 June.
+    document: documents/council-minutes.md
+
+  # ------------------------------------------------------------ lab
+  - id: tox-report
+    kind: document
+    title: Toxicology Report
+    tag: EV-16
+    summary: Full toxicology on the flask and post-mortem samples.
+    document: documents/tox-report.md
+
+  - id: latent-flask
+    kind: print
+    title: Latent Lift — Flask Lid
+    tag: EV-17
+    summary: A partial print lifted from the underside of the flask lid.
+    subject: Underside of flask lid (item A)
+    latent: true
+    print:
+      pattern: loop
+      grid: 6
+      seed: 7
+      smudged: [E1, F1, E2, F2, F3]
+      features:
+        - { cell: A3, type: dot }
+        - { cell: B2, type: ending }
+        - { cell: B4, type: bifurcation }
+        - { cell: C3, type: bifurcation }
+        - { cell: C5, type: ending }
+        - { cell: D2, type: dot }
+        - { cell: D4, type: ending }
+        - { cell: E5, type: enclosure }
+
+  - id: card-wren
+    kind: print
+    title: Print Card — W. Talbot
+    tag: EV-18
+    summary: Right index finger, taken for elimination.
+    subject: Wren Talbot
+    print:
+      pattern: loop
+      grid: 6
+      seed: 7
+      features:
+        - { cell: A3, type: dot }
+        - { cell: A6, type: dot }
+        - { cell: B2, type: ending }
+        - { cell: B4, type: bifurcation }
+        - { cell: C3, type: bifurcation }
+        - { cell: C5, type: ending }
+        - { cell: D2, type: dot }
+        - { cell: D4, type: ending }
+        - { cell: E1, type: ending }
+        - { cell: E5, type: enclosure }
+        - { cell: F2, type: bifurcation }
+
+  - id: card-felix
+    kind: print
+    title: Print Card — F. Marchetti
+    tag: EV-19
+    summary: Right index finger, from a previous caution.
+    subject: Felix Marchetti
+    print:
+      pattern: loop
+      grid: 6
+      seed: 11
+      features:
+        - { cell: A1, type: dot }
+        - { cell: B2, type: ending }
+        - { cell: B4, type: bifurcation }
+        - { cell: C3, type: ending }
+        - { cell: D2, type: dot }
+        - { cell: D4, type: bifurcation }
+        - { cell: E5, type: enclosure }
+        - { cell: F4, type: ending }
+
+  - id: card-hollis
+    kind: print
+    title: Print Card — H. Crane
+    tag: EV-20
+    summary: Right index finger, taken for elimination.
+    subject: Hollis Crane
+    print:
+      pattern: whorl
+      grid: 6
+      seed: 23
+      features:
+        - { cell: A5, type: enclosure }
+        - { cell: B3, type: bifurcation }
+        - { cell: C2, type: ending }
+        - { cell: C5, type: ending }
+        - { cell: D2, type: dot }
+        - { cell: D5, type: dot }
+        - { cell: E4, type: ending }
+        - { cell: F6, type: bifurcation }
+
+  - id: card-odile
+    kind: print
+    title: Print Card — O. Marchetti
+    tag: EV-21
+    summary: Right index finger, taken post-mortem for elimination.
+    subject: Odile Marchetti
+    print:
+      pattern: arch
+      grid: 6
+      seed: 31
+      features:
+        - { cell: A2, type: bifurcation }
+        - { cell: B5, type: ending }
+        - { cell: C4, type: dot }
+        - { cell: D3, type: ending }
+        - { cell: E2, type: bifurcation }
+        - { cell: E6, type: enclosure }
+        - { cell: F1, type: dot }
+
+  # ------------------------------------------------------------ late game
+  - id: locker-search
+    kind: document
+    title: Locker Search — W. Talbot
+    tag: EV-22
+    summary: Items recovered from Wren Talbot's staff locker under warrant.
+    document: documents/locker-search.md
+
+  - id: journal
+    kind: document
+    title: Dr Marchetti's Journal
+    tag: EV-23
+    summary: Her private journal, unlocked. The last three entries.
+    document: documents/journal.md
+
+puzzles:
+  - id: desk-drawer
+    type: lock
+    title: The Locked Desk Drawer
+    prompt: |
+      Dr Marchetti's desk drawer was sent to the lab still locked. It has a four-digit keypad, and
+      nobody at the Trust knows the code. She must have written it down somewhere.
+    config: { variant: keypad, length: 4, label: "Desk drawer keypad" }
+    uses: [notebook, incident-report]
+    unlocks: { evidence: [access-log, drawer-note, phone-records, library-log] }
+    answer: "6092"
+    hints:
+      - Botanists sometimes label specimens with ink that only shows under ultraviolet light. Try the UV torch on her papers.
+      - Her notebook has a hidden line about the drawer. It refers to a code you can find in the incident report.
+      - The door code in the incident report is 2906. "Read it in the mirror" means reverse it.
+    solvedText: |
+      The drawer clicks open. Inside: a printout of the glasshouse door log, a sticky note, and a
+      folder where DS Nandakumar has dropped the phone and library records you asked for.
+
+  - id: timeline
+    type: timeline
+    title: Reconstruct the Timeline
+    prompt: |
+      Put these events in the order they really happened, earliest first. Every clock on this case
+      was checked against local time except one.
+    requires: [desk-drawer]
+    uses: [access-log, phone-records, library-log, greenhouse-diary, rail-ticket, incident-report]
+    unlocks: { evidence: [statement-wren, statement-hollis, statement-felix, statement-abe] }
+    config:
+      cards:
+        - { id: t-felix-visit, source: Keypad log, stamp: "THU 13 JUN 10:20", text: "Door opened with the shared code." }
+        - { id: t-door-in, source: Keypad log, stamp: "FRI 14 JUN 16:07", text: "Door opened with the shared code." }
+        - { id: t-call, source: Phone records, stamp: "Fri 16:58", text: "Odile calls Wren Talbot. Call lasts 2 min 10 s." }
+        - { id: t-lib-exit, source: Library badge reader, stamp: "Fri 17:02", text: "W. TALBOT badges out of the library." }
+        - { id: t-pruning, source: Work diary, stamp: "Wed 12 Jun", text: "Bed 7 (oleander) pruned, cuttings bagged — W.T." }
+        - { id: t-door-out, source: Keypad log, stamp: "FRI 14 JUN 16:16", text: "Door opened from inside (push bar)." }
+        - { id: t-train, source: Rail ticket, stamp: "Fri 15:52", text: "Felix Marchetti's train leaves Ashcombe Vale for Kingsmere." }
+        - { id: t-lib-entry, source: Library badge reader, stamp: "Fri 17:29", text: "W. TALBOT badges back into the library." }
+        - { id: t-sms, source: H. Crane's phone, stamp: "Fri 17:42", text: "Text from Odile: 'Feeling very odd, heart all over the place.'" }
+    answer: [t-pruning, t-felix-visit, t-train, t-call, t-lib-exit, t-door-in, t-door-out, t-lib-entry, t-sms]
+    hints:
+      - Do all the clocks agree? Compare one event that appears in two different sources.
+      - The incident report says Abe found her at 18:40. Find his entry in the keypad log and compare.
+      - The keypad clock is one hour behind. 16:07 on the keypad is really 17:07, just after Wren left the library.
+    solvedText: |
+      Corrected for the keypad's clock, the picture is stark: Odile phones Wren at 16:58. Four minutes
+      later Wren leaves the library. Someone opens the glasshouse door at 17:07 and leaves at 17:16.
+      Wren is back at her desk by 17:29. DS Nandakumar sends over the witness statements.
+
+  - id: statements
+    type: statements
+    title: Flag the Contradictions
+    prompt: |
+      Read the four statements. Flag the **three** lines that are contradicted by evidence you already
+      hold or by another witness.
+    requires: [timeline]
+    uses: [phone-records, library-log]
+    unlocks: { evidence: [council-minutes] }
+    config:
+      transcripts: [statement-wren, statement-hollis, statement-felix, statement-abe]
+      flagCount: 3
+    answer: [wren-4, wren-5, felix-1]
+    hints:
+      - Check each claim about times and contact against the phone records and library log. Then check the witnesses against each other.
+      - Two of the lies belong to the same person. The third is someone hiding a recent visit.
+      - "Wren says she didn't hear from Odile (the phone records show a call) and that she never left the library (the badge log disagrees). Felix says he hadn't seen Odile in two years, but Abe saw them together on Thursday."
+    solvedText: |
+      Wren Talbot lied twice about Friday afternoon. Felix lied about Thursday, which would explain
+      his prints on the door handle. The council sends over its minutes to check the Director's account.
+
+  - id: alibis
+    type: board
+    title: The Alibi Board
+    prompt: |
+      Pin each suspect to the **one** document that settles where they were between 17:00 and 17:20
+      on Friday. Connect three strings. Two documents are decoys.
+    requires: [statements]
+    uses: [council-minutes, rail-ticket, library-log]
+    config:
+      nodes:
+        - { id: n-wren, label: Wren Talbot, group: left, note: Research assistant }
+        - { id: n-hollis, label: Hollis Crane, group: left, note: Director }
+        - { id: n-felix, label: Felix Marchetti, group: left, note: Nephew }
+        - { id: n-library, label: Library access log, group: right, evidence: library-log }
+        - { id: n-minutes, label: Committee minutes, group: right, evidence: council-minutes }
+        - { id: n-ticket, label: Rail ticket and receipt, group: right, evidence: rail-ticket }
+        - { id: n-phone, label: Phone records, group: right, evidence: phone-records }
+        - { id: n-diary, label: Work diary, group: right, evidence: greenhouse-diary }
+    answer: [[n-wren, n-library], [n-hollis, n-minutes], [n-felix, n-ticket]]
+    hints:
+      - Phone records say who called whom, not where they were. The diary doesn't cover Friday afternoon.
+      - Each suspect has exactly one document that puts them somewhere at around five o'clock.
+      - Wren goes to the library log, Hollis to the committee minutes, Felix to the rail ticket and café receipt.
+    solvedText: |
+      Hollis Crane was addressing the planning committee at 17:05. Felix Marchetti was buying tea in
+      Kingsmere, forty miles away, at 17:20. Wren Talbot is the only one with half an hour unaccounted for.
+
+  - id: lab
+    type: lab
+    title: Toxicology Bench
+    prompt: |
+      The post-mortem notes a slow, irregular heartbeat and nausea. Pupils were normal. The police
+      think she breathed in organophosphate pesticide. Run tests until you can tell the coroner
+      **what poisoned her and how it reached her**.
+    requires: [statements]
+    uses: [floor-plan, incident-report]
+    unlocks: { evidence: [tox-report, latent-flask, card-wren, card-felix, card-hollis, card-odile] }
+    config:
+      processingSeconds: 4
+      samples:
+        - { id: blood, label: Post-mortem blood, description: Femoral blood sample, sealed AV-0614-B1. }
+        - { id: flask, label: Flask residue, description: Liquid residue from the steel flask (item A). }
+        - { id: canister, label: Canister swab, description: Swab from the Thornguard canister nozzle (item B). }
+        - { id: leaves, label: Leaf fragments, description: Green fragments swept from the potting bench. }
+      tests:
+        - { id: op, label: Organophosphate screen, description: Cholinesterase inhibition assay. }
+        - { id: glycoside, label: Cardiac glycoside screen, description: Immunoassay with LC-MS confirmation. }
+        - { id: microscopy, label: Plant tissue microscopy, description: Leaf structure under the microscope. }
+    results:
+      "blood|op": |
+        **ORGANOPHOSPHATE SCREEN — NEGATIVE.** Cholinesterase activity is in the normal range. Not
+        consistent with organophosphate exposure.
+      "blood|glycoside": |
+        **CARDIAC GLYCOSIDE SCREEN — POSITIVE.** Oleandrin present at a level consistent with heart
+        toxicity. Source not determined. Suggest testing food and drink.
+      "flask|op": |
+        **ORGANOPHOSPHATE SCREEN — NEGATIVE.** No pesticide residue in the flask.
+      "flask|glycoside": |
+        **CARDIAC GLYCOSIDE SCREEN — POSITIVE.** Oleandrin at a high concentration in the lemon
+        verbena tea. Confirmed by LC-MS. This is the source.
+      "flask|microscopy": |
+        **MICROSCOPY.** Fine plant fragments suspended in the tea. Too damaged to identify. Recommend a
+        chemical screen.
+      "canister|op": |
+        **ORGANOPHOSPHATE SCREEN — POSITIVE.** As expected: Thornguard is an organophosphate. The
+        nozzle is dry, with no sign of recent spraying.
+      "canister|glycoside": "**CARDIAC GLYCOSIDE SCREEN — NEGATIVE.**"
+      "leaves|op": "**ORGANOPHOSPHATE SCREEN — NEGATIVE.**"
+      "leaves|glycoside": |
+        **CARDIAC GLYCOSIDE SCREEN — POSITIVE.** Oleandrin is present, as it naturally is in this plant.
+      "leaves|microscopy": |
+        **MICROSCOPY.** Narrow, leathery leaf. The stomata (breathing pores) sit in hairy pits on the
+        underside. This is the textbook structure of *Nerium oleander*. Not foxglove.
+      "blood|microscopy": "**NOT APPLICABLE.** Microscopy is for plant tissue."
+      default: "**NO RESULT OF SIGNIFICANCE.**"
+    answer: { sample: flask, test: glycoside }
+    hints:
+      - Normal pupils and a slow, irregular heart don't fit pesticide poisoning. Which test fits those symptoms?
+      - A positive blood result tells you what poisoned her, but not how it got to her. What did she drink all afternoon?
+      - Run the cardiac glycoside screen on the flask residue.
+    solvedText: |
+      Oleandrin, a heart poison from the oleander plant, was in her tea. The Thornguard canister was
+      staged. The lab releases the full toxicology report, a latent print lifted from the flask lid,
+      and the elimination print cards.
+
+  - id: fingerprint
+    type: fingerprint
+    title: The Print on the Flask Lid
+    prompt: |
+      Whoever poisoned the tea unscrewed the flask lid. Mark at least **six** ridge features on the
+      latent lift, then decide which print card it matches. Watch the feature *types* as well as their
+      positions.
+    requires: [lab]
+    unlocks: { evidence: [locker-search] }
+    config:
+      latent: latent-flask
+      cards: [card-wren, card-felix, card-hollis, card-odile]
+      minMarks: 6
+    answer: card-wren
+    hints:
+      - Start with the overall pattern. Two of the four cards aren't even the same pattern type as the latent.
+      - Felix's card shares many positions with the latent, but compare the types at C3 and D4 carefully.
+      - Every feature on the latent matches Wren Talbot's card exactly, type and position.
+    solvedText: |
+      Eight points of agreement with no differences. The print on the flask lid is Wren Talbot's,
+      on a flask she said she never touched. A warrant is issued for her staff locker.
+
+  - id: journal
+    type: lock
+    title: Odile's Journal
+    prompt: |
+      Odile's leather journal has a six-letter word lock. The note from her drawer tells you how she
+      chose the word.
+    requires: [lab]
+    uses: [drawer-note, floor-plan]
+    unlocks: { evidence: [journal] }
+    config: { variant: word, length: 6, label: "Journal word lock" }
+    answer: NERIUM
+    hints:
+      - The note mentions a bed number. The floor plan tells you what grows there.
+      - A plant's scientific name has two parts. The first part is the genus.
+      - Bed 7 is Nerium oleander. The genus is NERIUM.
+    solvedText: |
+      The clasp springs open. The last three entries tell you what Odile knew, and who knew she knew.
+
+  - id: accusation
+    type: accusation
+    title: Final Accusation
+    prompt: |
+      The coroner's call is about to start. Name the culprit, the motive and the method. All three
+      must be right for the case to stand.
+    requires: [alibis, fingerprint, journal]
+    config:
+      suspects:
+        - { id: wren, label: Wren Talbot }
+        - { id: hollis, label: Hollis Crane }
+        - { id: felix, label: Felix Marchetti }
+      motives:
+        - { id: cottage, label: To inherit her cottage }
+        - { id: meadow, label: To push through the east meadow sale }
+        - { id: data, label: To stop her exposing falsified research data }
+        - { id: credit, label: Revenge for being left off a paper }
+      methods:
+        - { id: fumes, label: Organophosphate fumes in a sealed glasshouse }
+        - { id: oleander, label: Oleander extract in her flask of tea }
+        - { id: foxglove, label: Foxglove leaves in her lunch }
+        - { id: heat, label: Shutting the vents to cause heatstroke }
+    answer: { suspect: wren, motive: data, method: oleander }
+    hints:
+      - Only one suspect has no alibi for 17:00–17:20 and left a print on the flask.
+      - Her journal says why she was going to the journal editors on Monday.
+      - Wren Talbot, to stop Odile exposing the falsified data, using oleander extract in the flask.
+    solvedText: The case stands.

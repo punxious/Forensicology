@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+coverage/
+next-env.d.ts
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+# Compiled case bundles contain hashed answers and are produced at build time.
+lib/server/generated/
+test-results/
+playwright-report/
+.DS_Store
