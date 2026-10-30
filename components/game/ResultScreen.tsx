@@ -26,7 +26,7 @@ export function ResultScreen({ view, onRestart }: { view: RunView; onRestart: ()
         <div className="my-6">
           <Stamp className="fx-stamp-in text-2xl sm:text-3xl">{r.rank.label}</Stamp>
         </div>
-        <p className="font-mono text-5xl font-bold tabular-nums">{r.score.toLocaleString("en-GB")}</p>
+        <p className="font-mono text-5xl font-bold tabular-nums">{r.score.toLocaleString("en-AU")}</p>
         <p className="mt-1 text-sm opacity-80">
           Solved in {formatDuration(r.elapsedMs)}
           {r.overtime ? " (overtime: rank capped at Detective)" : ""}
@@ -41,14 +41,14 @@ export function ResultScreen({ view, onRestart }: { view: RunView; onRestart: ()
                   <th scope="row" className="py-1 text-left font-normal">
                     {label}
                   </th>
-                  <td className="py-1 text-right tabular-nums">{v > 0 ? v.toLocaleString("en-GB") : `−${Math.abs(v).toLocaleString("en-GB")}`}</td>
+                  <td className="py-1 text-right tabular-nums">{v > 0 ? v.toLocaleString("en-AU") : `−${Math.abs(v).toLocaleString("en-AU")}`}</td>
                 </tr>
               ))}
             <tr>
               <th scope="row" className="py-1 text-left">
                 Final score
               </th>
-              <td className="py-1 text-right font-bold tabular-nums">{r.score.toLocaleString("en-GB")}</td>
+              <td className="py-1 text-right font-bold tabular-nums">{r.score.toLocaleString("en-AU")}</td>
             </tr>
           </tbody>
         </table>

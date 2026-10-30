@@ -22,7 +22,7 @@ const themeScript = `try{var t=localStorage.getItem("fx-theme");if(t!=="manila"&
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GB" suppressHydrationWarning>
+    <html lang="en-AU" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

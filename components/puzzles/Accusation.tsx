@@ -65,7 +65,7 @@ export function Accusation({ puzzle, submit, penalties }: PuzzleProps<"accusatio
             <Button variant="ghost" onClick={() => setConfirming(false)}>
               Not yet
             </Button>
-            <span className="text-sm text-muted">A wrong accusation costs {penalties.wrongAccusation.toLocaleString("en-GB")} points.</span>
+            <span className="text-sm text-muted">A wrong accusation costs {penalties.wrongAccusation.toLocaleString("en-AU")} points.</span>
           </>
         )}
       </div>
